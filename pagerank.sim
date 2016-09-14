@@ -1,0 +1,23 @@
+element Page
+  outlinks : float;
+  pr       : float;
+end
+
+element Link
+end
+
+extern pages : set{Page};
+extern links : set{Link}(pages,pages);
+
+func pagerank_matrix(link : Link, p : (Page*2)) -> (A : tensor[pages,pages](float))
+  A(p(1),p(0)) = 0.85 / p(0).outlinks;
+end
+
+export func main()
+  A = map pagerank_matrix to links reduce +;
+
+  %pages.pr = 1.0;
+  for i in 0:10
+    pages.pr = A * pages.pr + (1.0 - 0.85);
+  end
+end
